@@ -1,0 +1,75 @@
+Arguments: 
+  C:\Program Files\nodejs\node.exe C:\Users\popo6\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js add bootstrap
+
+PATH: 
+  C:\Python310\Scripts\;C:\Python310\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\Go\bin;C:\Program Files\nodejs\;C:\ProgramData\chocolatey\bin;C:\Program Files (x86)\Google\Cloud SDK\google-cloud-sdk\bin;C:\Program Files\Git\cmd;C:\TDM-GCC-64\bin;C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql;C:\Program Files\Docker\Docker\resources\bin;C:\ProgramData\DockerDesktop\version-bin;C:\Program Files\Terraform;C:\Program Files (x86)\GnuWin32\bin;C:\Program Files\Protoc\bin;C:\Ruby30-x64\bin;C:\Users\popo6\.pyenv\pyenv-win\bin;C:\Users\popo6\.pyenv\pyenv-win\shims;C:\Users\popo6\AppData\Local\Programs\Python\Python38\Scripts\;C:\Users\popo6\AppData\Local\Programs\Python\Python38\;C:\Users\popo6\.poetry\bin;C:\Ruby31-x64\bin;C:\Users\popo6\AppData\Local\Microsoft\WindowsApps;C:\Users\popo6\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\popo6\go\bin;C:\Users\popo6\AppData\Roaming\npm;C:\Program Files\MySQL\MySQL Server 8.0\bin;C:\Program Files\heroku\bin;C:\Program Files (x86)\Nmap
+
+Yarn version: 
+  1.22.19
+
+Node version: 
+  16.15.1
+
+Platform: 
+  win32 x64
+
+Trace: 
+  Error: EPERM: operation not permitted, unlink 'D:\develop\project\game\client\node_modules\esbuild-windows-64\esbuild.exe'
+
+npm manifest: 
+  {
+  	"name": "client",
+  	"version": "0.0.1",
+  	"scripts": {
+  		"dev": "vite dev",
+  		"build": "vite build",
+  		"preview": "vite preview",
+  		"test": "playwright test",
+  		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+  		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+  		"lint": "prettier --plugin-search-dir . --check . && eslint .",
+  		"format": "prettier --plugin-search-dir . --write .",
+  		"prepare": "svelte-kit sync && npm run smui-theme",
+  		"smui-theme": "smui-theme compile static/smui.css -i src/theme"
+  	},
+  	"devDependencies": {
+  		"@fontsource/fira-mono": "^4.5.0",
+  		"@neoconfetti/svelte": "^1.0.0",
+  		"@playwright/test": "^1.25.0",
+  		"@smui/button": "^6.1.4",
+  		"@smui/form-field": "^6.1.4",
+  		"@smui/textfield": "^6.1.4",
+  		"@sveltejs/adapter-auto": "next",
+  		"@sveltejs/adapter-node": "^1.0.0-next.96",
+  		"@sveltejs/kit": "next",
+  		"@types/bcrypt": "^5.0.0",
+  		"@types/cookie": "^0.5.1",
+  		"@typescript-eslint/eslint-plugin": "^5.27.0",
+  		"@typescript-eslint/parser": "^5.27.0",
+  		"eslint": "^8.16.0",
+  		"eslint-config-prettier": "^8.3.0",
+  		"eslint-plugin-svelte3": "^4.0.0",
+  		"prettier": "^2.6.2",
+  		"prettier-plugin-svelte": "^2.7.0",
+  		"prisma": "^4.4.0",
+  		"smui-theme": "^6.2.0",
+  		"svelte": "^3.46.0",
+  		"svelte-check": "^2.7.1",
+  		"svelte-preprocess": "^4.10.6",
+  		"tslib": "^2.3.1",
+  		"typescript": "^4.7.4",
+  		"vite": "^3.1.0"
+  	},
+  	"type": "module",
+  	"dependencies": {
+  		"@prisma/client": "^4.4.0",
+  		"bcrypt": "^5.1.0",
+  		"svelte-material-ui": "^6.2.0"
+  	}
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
