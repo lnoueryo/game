@@ -30,7 +30,7 @@ const register: Action = async ({ request }) => {
     return invalid(400, { invalid: true })
   }
 
-  const user = await db.user.findUnique({
+  const user = await db.players.findUnique({
     where: { username },
   })
 
@@ -38,7 +38,7 @@ const register: Action = async ({ request }) => {
     return invalid(400, { user: true })
   }
 
-  await db.user.create({
+  await db.players.create({
     data: {
       username,
       passwordHash: await bcrypt.hash(password, 10),

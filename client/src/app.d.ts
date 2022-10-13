@@ -3,6 +3,22 @@ declare namespace App {
       user: {
         name: string
         role: string
+      },
+      games: [
+        {
+          id: int
+          name: string
+        }
+      ],
+      game: {
+        id: int
+        name: string
+        tables: [
+          {
+            id: int
+            players: string
+          }
+        ],
       }
     }
     // interface PageData {}

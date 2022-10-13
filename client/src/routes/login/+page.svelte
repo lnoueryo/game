@@ -61,17 +61,5 @@
   import { goto, invalidateAll } from '$app/navigation'
 
   export let form: ActionData;
-  // export let data;
 
-  // async function getData() {
-  //   const response = await fetch('login', {
-  //     method: 'POST',
-  //     body: JSON.stringify({ a, b }),
-  //     headers: {
-  //       'content-type': 'application/json'
-  //     }
-  //   });
-  //   console.log(response)
-  //   total = await response.json();
-  // }
 </script>

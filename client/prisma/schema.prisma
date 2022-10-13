@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["interactiveTransactions"]
 }
 
 datasource db {
@@ -7,7 +8,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+model Players {
   id            String @id @default(uuid())
   username      String @unique
   passwordHash  String
@@ -18,10 +19,41 @@ model User {
 
   role   Roles @relation(fields: [roleId], references: [id])
   roleId Int
+
+  table   Tables? @relation(fields: [tableId], references: [key])
+  tableId String?
 }
 
 model Roles {
   id   Int    @id @default(autoincrement())
   name String @unique
-  User User[]
+  player Players[]
 }
+
+model Games {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+  description String
+  image String
+  tables Tables[]
+}
+
+model Tables {
+  key   String @id @default(uuid())
+  title String
+  limit Int
+  players Players[]
+  cards Cards[]
+  games  Games @relation(fields: [gameId], references: [id])
+  gameId Int
+}
+
+model Cards {
+  id String @id @default(uuid())
+  name String
+  type String
+  table   Tables @relation(fields: [tableId], references: [key])
+  tableId String
+  active Boolean
+}
+

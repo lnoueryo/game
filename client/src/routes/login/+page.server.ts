@@ -3,12 +3,13 @@ import bcrypt from 'bcrypt'
 import type { Action, Actions, PageServerLoad } from './$types'
 
 import { db } from '$lib/database'
+import type { User } from '@prisma/client'
 
 export const load: PageServerLoad = async ({ locals }) => {
   // redirect user if logged in
-  // if (locals.user) {
-  //   throw error(404)
-  // }
+  if (locals.user) {
+    throw error(404)
+  }
 }
 /** @type {import('./$types').Actions} */
 const login: Action = async ({ cookies, request, url }) => {
@@ -24,21 +25,18 @@ const login: Action = async ({ cookies, request, url }) => {
   ) {
     return invalid(400, { invalid: true })
   }
+  
+  const user = await db.players.findUnique({ where: { username } })
+  // 名前が見つからなかった場合も処理速度をそろえる
+  const hashPassword = user?.passwordHash || '$2b$10$Kye0wR3Bh$A7dbSg21O4gudX%oK14132VSDKAL1658helloWF.m86ZUFi06HhsOwk6O2DpC8*+';
+  const userPassword = await bcrypt.compare(password, hashPassword)
 
-  const user = await db.user.findUnique({ where: { username } })
-
-  if (!user) {
-    return invalid(400, { credentials: true })
-  }
-
-  const userPassword = await bcrypt.compare(password, user.passwordHash)
-
-  if (!userPassword) {
+  if (!userPassword || !user) {
     return invalid(400, { credentials: true })
   }
 
   // generate new auth token just in case
-  const authenticatedUser = await db.user.update({
+  const authenticatedUser = await db.players.update({
     where: { username: user.username },
     data: { userAuthToken: crypto.randomUUID() },
   })
