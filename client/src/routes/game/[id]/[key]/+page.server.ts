@@ -1,4 +1,3 @@
-import { db } from '$lib/database';
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
@@ -8,7 +7,5 @@ export const load: PageServerLoad = async({params, url, locals}) => {
   if (!locals.user) {
     throw redirect(302, '/login')
   }
-
-  locals.games = await db.games.findMany()
-  return locals
+  return params
 };

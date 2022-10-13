@@ -1,27 +1,26 @@
 <script>
-	// /** @type {import('./$types').PageData} */
-	// export let data;
-	// if(data.b == 2) {
-
-	// }
-	// console.log(data); // `undefined`, it wasn't passed through in +page.js
-	// console.log(data); // `2`
+	import { page } from '$app/stores';
+	import { dataset_dev } from 'svelte/internal';
   </script>
-<script context="module">
 
-  </script>
 <svelte:head>
 	<title>Home</title>
 	<meta name="description" content="Svelte demo app" />
 </svelte:head>
 
 <section>
-	<div>Black</div>
-	<!-- {#each cats as cat}
-		<li><a target="_blank" href="https://www.youtube.com/watch?v={cat.id}">
-			{cat.name}
-		</a></li>
-	{/each} -->
+	<div class="container">
+		{#each $page.data.games as game}
+			<div class="card" style="width: 18rem;">
+				<img src="/games/{game.image}" class="card-img-top" alt="">
+				<div class="card-body">
+				<h5 class="card-title">{game.name}</h5>
+				<p class="card-text">{game.description}</p>
+				<a href="/game/{game.id}" class="btn btn-primary">Go To Play</a>
+				</div>
+			</div>
+		{/each}
+	</div>
 </section>
 
 <style>

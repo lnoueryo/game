@@ -15,7 +15,7 @@
 	{/if}
 
 	{#if $page.data.user}
-	  <a href="/admin">Admin</a>
+	  <!-- <a href="/admin">Admin</a> -->
 
 	  <form
 		action="/logout?/logout"
