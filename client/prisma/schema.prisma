@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["interactiveTransactions"]
 }
 
@@ -8,52 +8,69 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Players {
-  id            String @id @default(uuid())
-  username      String @unique
-  passwordHash  String
-  userAuthToken String @unique
-
+model card {
+  id        String   @id
+  name      String
+  type      String
+  tableId   String
+  playerId  Int?
+  active    Boolean
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @default(now()) @updatedAt
+  table     table    @relation(fields: [tableId], references: [key], map: "Cards_tableId_fkey", onDelete: Cascade)
+  player    player?   @relation(fields: [playerId], references: [id], map: "Cards_playerId_fkey")
 
-  role   Roles @relation(fields: [roleId], references: [id])
-  roleId Int
-
-  table   Tables? @relation(fields: [tableId], references: [key])
-  tableId String?
+  @@index([tableId], map: "Cards_tableId_fkey")
+  @@index([playerId], map: "Cards_playerId_fkey")
 }
 
-model Roles {
-  id   Int    @id @default(autoincrement())
-  name String @unique
-  player Players[]
-}
-
-model Games {
-  id   Int    @id @default(autoincrement())
-  name String @unique
+model game {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique(map: "Games_name_key")
   description String
-  image String
-  tables Tables[]
+  image       String
+  extraFields Json
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+  tables       table[]
 }
 
-model Tables {
-  key   String @id @default(uuid())
-  title String
-  limit Int
-  players Players[]
-  cards Cards[]
-  games  Games @relation(fields: [gameId], references: [id])
-  gameId Int
+model player {
+  id            Int      @id @default(autoincrement())
+  username      String   @unique(map: "Players_username_key")
+  passwordHash  String
+  userAuthToken String   @unique(map: "Players_userAuthToken_key")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now()) @updatedAt
+  roleId        Int
+  tableId       String?
+  role          role     @relation(fields: [roleId], references: [id], map: "Players_roleId_fkey")
+  table         table?   @relation(fields: [tableId], references: [key], map: "Players_tableId_fkey")
+  cards         card[]
+
+  @@index([roleId], map: "Players_roleId_fkey")
+  @@index([tableId], map: "Players_tableId_fkey")
 }
 
-model Cards {
-  id String @id @default(uuid())
-  name String
-  type String
-  table   Tables @relation(fields: [tableId], references: [key])
-  tableId String
-  active Boolean
+model role {
+  id     Int      @id @default(autoincrement())
+  name   String   @unique(map: "Roles_name_key")
+  players player[]
 }
 
+model table {
+  key       String   @id
+  title     String
+  gameId    Int
+  adminId   Int
+  limit     Int
+  start     Boolean
+  extraFields Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  game      game     @relation(fields: [gameId], references: [id], map: "Tables_gameId_fkey")
+  cards      card[]
+  players    player[]
+
+  @@index([gameId], map: "Tables_gameId_fkey")
+}

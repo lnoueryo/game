@@ -1,6 +1,5 @@
 <script>
 	import { page } from '$app/stores';
-	import { dataset_dev } from 'svelte/internal';
   </script>
 
 <svelte:head>

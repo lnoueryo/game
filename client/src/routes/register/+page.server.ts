@@ -3,10 +3,9 @@ import type { Action, Actions, PageServerLoad } from './$types'
 import bcrypt from 'bcrypt'
 
 import { db } from '$lib/database'
-
 // using an enum for user roles to avoid typos
 // if you're not using TypeScript use an object
-enum Roles {
+enum Role {
   ADMIN = 'ADMIN',
   USER = 'USER',
 }
@@ -30,7 +29,7 @@ const register: Action = async ({ request }) => {
     return invalid(400, { invalid: true })
   }
 
-  const user = await db.players.findUnique({
+  const user = await db.player.findUnique({
     where: { username },
   })
 
@@ -38,16 +37,17 @@ const register: Action = async ({ request }) => {
     return invalid(400, { user: true })
   }
 
-  await db.players.create({
+  await db.player.create({
     data: {
       username,
       passwordHash: await bcrypt.hash(password, 10),
       userAuthToken: crypto.randomUUID(),
-      role: { connect: { name: Roles.USER } },
+      role: { connect: { name: Role.USER } },
     },
   })
 
   throw redirect(303, '/login')
+
 }
 
 export const actions: Actions = { register }

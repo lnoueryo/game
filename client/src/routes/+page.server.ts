@@ -9,6 +9,12 @@ export const load: PageServerLoad = async({params, url, locals}) => {
     throw redirect(302, '/login')
   }
 
-  locals.games = await db.games.findMany()
+  if (locals.user.table) {
+    throw redirect(302, `/game/${locals.user.table.gameId}/${locals.user.table.key}`)
+  }
+
+  locals.games = await db.game.findMany()
+
   return locals
 };
+
