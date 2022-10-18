@@ -53,6 +53,5 @@
   import type { ActionData } from './$types'
   import { applyAction, enhance } from '$app/forms'
   import { goto, invalidateAll } from '$app/navigation'
-  export let data;
   export let form: ActionData
 </script>
