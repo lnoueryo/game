@@ -9,9 +9,7 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --plugin-search-dir . --check . && eslint .",
-		"format": "prettier --plugin-search-dir . --write .",
-		"prepare": "svelte-kit sync && npm run smui-theme",
-		"smui-theme": "smui-theme compile static/smui.css -i src/theme"
+		"format": "prettier --plugin-search-dir . --write ."
 	},
 	"devDependencies": {
 		"@fontsource/fira-mono": "^4.5.0",
@@ -30,6 +28,8 @@
 		"eslint": "^8.16.0",
 		"eslint-config-prettier": "^8.3.0",
 		"eslint-plugin-svelte3": "^4.0.0",
+		"grpc_tools_node_protoc_ts": "^5.3.2",
+		"grpc-tools": "^1.11.3",
 		"prettier": "^2.6.2",
 		"prettier-plugin-svelte": "^2.7.0",
 		"prisma": "^4.4.0",
@@ -43,8 +43,15 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@grpc/grpc-js": "^1.7.2",
+		"@grpc/proto-loader": "^0.7.3",
 		"@prisma/client": "^4.4.0",
 		"bcrypt": "^5.1.0",
-		"svelte-material-ui": "^6.2.0"
+		"google-protobuf": "^3.21.2",
+		"minimist": "^1.2.7",
+		"socket.io": "^4.5.2",
+		"socket.io-client": "^4.5.2",
+		"svelte-material-ui": "^6.2.0",
+		"ts-protoc-gen": "^0.15.0"
 	}
 }
