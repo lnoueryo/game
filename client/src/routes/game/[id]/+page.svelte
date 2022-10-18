@@ -1,9 +1,48 @@
 <script lang="ts">
-	import type { ActionData } from './$types'
+	import type { ActionData, PageData } from './$types'
 	import { applyAction, enhance } from '$app/forms';
 	import { goto, invalidateAll } from '$app/navigation';
-	import { page } from '$app/stores';
 	export let form: ActionData;
+	import { io } from 'socket.io-client'
+	import type { ActionResult } from '@sveltejs/kit';
+	import { page } from '$app/stores'
+
+	export let data: PageData;
+	let game = data.game;
+
+	const socket = io();
+
+	socket.on('game', (_game) => {
+		if(String(_game.id) != $page.params.id) return;
+		game = _game;
+	});
+
+	const createTable = async(result: ActionResult<Record<string, any>, Record<string, any>>) => {
+		invalidateAll()
+		await applyAction(result)
+		if(result.type == 'success') {
+			socket.emit('game', result.data?.game);
+			goto(result.data?.url)
+		}
+	}
+
+	const deleteTable = async(result: ActionResult<Record<string, any>, Record<string, any>>) => {
+		invalidateAll()
+		await applyAction(result)
+		if(result.type == 'success') {
+			socket.emit('game', result.data);
+		}
+	}
+
+	const goToTable = async(result: ActionResult<Record<string, any>, Record<string, any>>) => {
+		invalidateAll()
+		await applyAction(result)
+		if(result.type == 'success') {
+			console.log(result.data)
+			socket.emit('game', result.data?.game);
+			goto(result.data?.url)
+		}
+	}
 </script>
 
 <svelte:head>
@@ -14,7 +53,7 @@
 <section>
 	<div class="container">
 		<!-- Button trigger modal -->
-		<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
+		<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal" disabled={$page.data.user.tableId}>
 			新しく作成
 		</button>
 		<!-- Modal -->
@@ -31,15 +70,9 @@
 							method="POST"
 							use:enhance={() => {
 								return async ({ result }) => {
-									invalidateAll()
-									await applyAction(result)
-									console.log(result)
-									console.log(form)
-									if(result.type == 'redirect') {
-										goto(result.location)
-									}
+									createTable(result)
 								}
-								}}
+							}}
 							>
 							<div class="mb-3">
 								<label for="title" class="mb-2">タイトル</label>
@@ -68,29 +101,47 @@
 				</div>
 			</div>
 		</div>
-		{#each $page.data.game.tables as table}
+		{#each game.tables as table}
 			<div class="card" style="width: 18rem;">
 				<form
 					class="text-end"
 					action="?/deleteTable"
 					method="POST"
 					use:enhance={() => {
-						return async ({ result }) => {
-							invalidateAll()
-							await applyAction(result)
-						}
+							return async ({ result }) => {
+								deleteTable(result)
+							}
 						}}
 					>
 					<input id="table-id" name="table-id" type="hidden" value={table.key}>
-					<button type="submit" class="btn btn-danger">削除</button>
+					{#if $page.data.user.id == table.adminId}
+						<button type="submit" class="btn btn-danger">削除</button>
+					{/if}
 				</form>
 				<div class="card-body">
 					<h5 class="card-title">{table.title}</h5>
 					{#each table.players as player}
-						{player.username}
+						<div>
+							{player.id}
+							{player.username}
+						</div>
 					{/each}
 				</div>
-				<a href="/game/{$page.data.game.id}/{table.key}" class="btn btn-primary">Go To Play</a>
+				<form
+					class="text-end"
+					action="?/goToTable"
+					method="POST"
+					use:enhance={() => {
+							return async ({ result }) => {
+								// テーブルに参加し、リアルタイムでプレイヤーを反映
+								goToTable(result)
+							}
+						}}
+					>
+					<input id="table-id" name="table-id" type="hidden" value={table.key}>
+					<button type="submit" class="btn btn-primary">Go To Play</button>
+				</form>
+				<!-- <a href="/game/{game.id}/{table.key}" class="btn btn-primary">Go To Play</a> -->
 			</div>
 		{/each}
 	</div>
