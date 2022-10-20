@@ -2,6 +2,7 @@ import { db } from '$lib/database';
 import type { Action, RouteParams } from '.svelte-kit/types/src/routes/$types';
 import { invalid, redirect, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from '../../../../.svelte-kit/types/src/routes/black-jack/$types';
+import { gameClient } from '$lib/grpc';
 
 /** @type {import('@sveltekit/types').Load} */
 export const load: PageServerLoad = async({params, url, locals}) => {
@@ -134,12 +135,17 @@ const goToTable: Action = async ({ request, locals, params, cookies }) => {
 
 }
 
-const getGame = (params: RouteParams) => {
+const getGame = async(params: RouteParams) => {
   const id = Number(params.id)
-  return db.game.findUnique({
-    where: { id:  id},
-    select: { id: true, name: true, extraFields: true, tables: {select: {key: true, title: true, adminId: true, players: {select: {id: true, username: true}}}} },
-  })
+  console.log(id)
+  const res = await new Promise((resolve, reject) => gameClient.GetGame({id: id}, function(err, response) {
+    if(err) {
+      return reject(err)
+    }
+    console.log(response)
+    resolve(response)
+  }))
+  return res
 }
 
 /** @type {import('./$types').Actions} */

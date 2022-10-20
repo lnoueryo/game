@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores'
 	import { applyAction, enhance } from '$app/forms'
-  	import { goto, invalidateAll } from '$app/navigation'
+  	import { invalidateAll } from '$app/navigation'
   </script>
 
   <svelte:head>
@@ -16,7 +16,6 @@
 
 	{#if $page.data.user}
 	  <!-- <a href="/admin">Admin</a> -->
-	{$page.data.user.name}
 	  <form
 		action="/logout?/logout"
 		method="POST"
