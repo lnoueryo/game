@@ -1,87 +1,86 @@
 import { db } from '$lib/database';
-import type { Action, RouteParams } from '.svelte-kit/types/src/routes/$types';
+import type { Action } from '.svelte-kit/types/src/routes/$types';
 import { invalid, redirect, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from '../../../../.svelte-kit/types/src/routes/black-jack/$types';
 import { gameClient } from '$lib/grpc';
+import type{ Error, Game } from '$lib/grpc';
 
-/** @type {import('@sveltekit/types').Load} */
-export const load: PageServerLoad = async({params, url, locals}) => {
+/** @type {import('./$types').PageServerLoad} */
+export const load: PageServerLoad = async({params, locals}) => {
   //     console.log(url.searchParams.get('a'))
   if (!locals.user) {
     throw redirect(302, '/login')
   }
-
   if (locals.user.table) {
     throw redirect(302, `/game/${locals.user.table.gameId}/${locals.user.table.key}`)
   }
 
-  locals.game = await getGame(params)
+  const game = await getGame(params)
+  if(!game) throw redirect(302, '/')
+
+  locals.game = game as App.Locals['game']
 
   return locals
 };
 
-/** @type {import('./$types').Actions} */
+/** @type {import('./$types').Action} */
 const createTable: Action = async ({ cookies, request, params, locals }) => {
 
   const form = await request.formData()
   const title = form.get('title')
   const limit = Number(form.get('limit'))
   const session = cookies.get('session')
-  if(isNaN(limit)) return invalid(400, { invalid: true });
   if(!session) return await redirect(303, '/login')
+
+  if(isNaN(limit)) throw invalid(400, { invalid: true });
   if (
     !title ||
     !limit
   ) throw invalid(400, { invalid: true })
 
+  // 認証
   const user = await db.player.findUnique({
     where: { userAuthToken: session },
-    select: { id: true },
+    select: { id: true, tableId: true },
   })
   if(!user) throw redirect(303, '/login')
+  if(user.tableId) throw invalid(400, { invalid: true });
 
-  locals.game = await getGame(params)
-
-  const gameId = Number(params.id)
+  const gameId = Number((params as {id: string}).id)
   const key = crypto.randomUUID()
+
+  /*
+  extraFieldsを取得するためだけにクエリを投げている。
+  game.extraFieldsは参照のみのため、JSONファイルで管理する選択肢もあり。
+  */
+  locals.game = await getGame(params) as App.Locals['game']
+
   const table = {
     key: key,
     title: title,
-    limit: limit,
     gameId: gameId,
-    start: false,
     adminId: user.id,
+    limit: limit,
+    start: false,
     extraFields: locals.game.extraFields
   }
 
-  let newTable;
-
+  let res;
   try {
-    newTable = await db.$transaction(async (tx) => {
-      const newTable = await tx.table.create({
-        data: table,
-      })
-      const player = await tx.player.update({
-        where: {
-          userAuthToken: session,
-        },
-        data: {
-          tableId: newTable.key,
-        },
-      })
-
-      return newTable
-
-    })
-
-    // console.log(`/game/${gameId}/${newTable.key}`)
-
-  } catch (err) {
-    console.error(err)
-    throw invalid(400, {credentials: true})
+    res = await new Promise((resolve, reject) => gameClient.createTable({table: table}, (err: Error, response: App.Locals['game']) => {
+      if(err) {
+        return reject(err)
+      }
+      resolve(response)
+    }))
+  } catch (error: any) {
+    if(error.details == 'failed create') throw invalid(400, { failed: true });
+    else throw invalid(400, { network: true });
   }
 
-  return {game: locals.game, url: `/game/${gameId}/${newTable.key}`}
+  locals.game = res  as App.Locals['game']
+
+  return {game: locals.game, url: `/game/${gameId}/${key}`}
 
 }
 
@@ -97,7 +96,7 @@ const deleteTable: Action = async ({ request, locals, params }) => {
       },
     })
 
-    locals.game = await getGame(params)
+    locals.game = await getGame(params) as App.Locals['game']
 
     return locals.game
 
@@ -124,8 +123,8 @@ const goToTable: Action = async ({ request, locals, params, cookies }) => {
       },
     })
 
-    locals.game = await getGame(params)
-    const gameId = Number(params.id)
+    locals.game = await getGame(params) as App.Locals['game']
+    const gameId = Number((params as {id: string}).id)
     return {game: locals.game, url: `/game/${gameId}/${key}`}
 
   } catch (err) {
@@ -135,19 +134,23 @@ const goToTable: Action = async ({ request, locals, params, cookies }) => {
 
 }
 
-const getGame = async(params: RouteParams) => {
+
+
+const getGame = async(params: any) => {
   const id = Number(params.id)
-  console.log(id)
-  const res = await new Promise((resolve, reject) => gameClient.GetGame({id: id}, function(err, response) {
-    if(err) {
-      return reject(err)
-    }
-    console.log(response)
-    resolve(response)
-  }))
+  let res;
+  try {
+    res = await new Promise((resolve, reject) => gameClient.getGame({id: id}, (err: Error, response: App.Locals['game']) => {
+      if(err) {
+        return reject(err)
+      }
+      resolve(response)
+    }))
+  } catch (error) {
+    console.log(error)
+  }
   return res
 }
 
 /** @type {import('./$types').Actions} */
 export const actions: Actions = { createTable, deleteTable, goToTable }
-

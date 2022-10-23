@@ -1,7 +1,7 @@
 import { db } from '$lib/database';
 
-import type { Action, PageServerLoad, RouteParams } from '.svelte-kit/types/src/routes/$types';
-import { invalid, redirect, type Actions } from '@sveltejs/kit';
+import type { PageServerLoad } from '.svelte-kit/types/src/routes/$types';
+import { redirect, type Actions } from '@sveltejs/kit';
 
 /** @type {import('@sveltekit/types').Load} */
 export const load: PageServerLoad = async({params, url, locals}) => {
@@ -11,8 +11,9 @@ export const load: PageServerLoad = async({params, url, locals}) => {
   }
 
   locals.table = await db.table.findUnique({
-    where: {key: params.key},
+    where: {key: (params as {key: string}).key},
     select: { key: true, title: true, cards: true, players: true },
   })
+
   return locals
 };

@@ -6,6 +6,19 @@ declare namespace App {
       username: string
       role: string
       tableId: string | null
+      table: {
+        key: string
+        title: string
+        limit: number
+        gameId: number
+        start: boolean
+        players: {
+          id: number
+          username: string
+          role: string
+          tableId: string | null
+        }[]
+      }
     },
     games: {
       id: int
@@ -27,18 +40,24 @@ declare namespace App {
         }[]
       }[],
     }
+    // table: {
+    //   key: string
+    //   title: string
+    //   limit: number
+    //   start: boolean
+    //   players: {
+    //     id: number
+    //     username: string
+    //     role: string
+    //     tableId: string | null
+    //   }[]
+    // }
     table: {
-      key: string
-      title: string
-      limit: number
-      start: boolean
-      players: {
-        id: number
-        username: string
-        role: string
-        tableId: string | null
-      }[]
-    }
+      key: string;
+      title: string;
+      cards: card[];
+      players: player[];
+    } | null
   }
   // interface PageData {}
   // interface Platform {}
