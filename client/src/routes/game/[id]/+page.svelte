@@ -133,7 +133,6 @@
 					method="POST"
 					use:enhance={() => {
 							return async ({ result }) => {
-								// テーブルに参加し、リアルタイムでプレイヤーを反映
 								goToTable(result)
 							}
 						}}
@@ -141,7 +140,6 @@
 					<input id="table-id" name="table-id" type="hidden" value={table.key}>
 					<button type="submit" class="btn btn-primary">Go To Play</button>
 				</form>
-				<!-- <a href="/game/{game.id}/{table.key}" class="btn btn-primary">Go To Play</a> -->
 			</div>
 		{/each}
 	</div>

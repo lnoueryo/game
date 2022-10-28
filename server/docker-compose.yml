@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+
+  api:
+    container_name: table-api
+    build:
+      context: "."
+      dockerfile: "docker/prod/Dockerfile"
+    ports:
+      - "50051:50051"
+    depends_on:
+      - mysql
+    volumes:
+      - ".:/app"
+    networks:
+      - game
+    command: go run main.go -port 50051
+
+  mysql:
+    image: mysql:8.0 # プロダクトで使うならバージョンはlatestじゃないほうが良いです
+    container_name: kartenspielen_mysql
+    platform: linux/x86_64
+    environment:
+      MYSQL_ROOT_PASSWORD: password # MySQLパスワード設定
+      MYSQL_DATABASE: kartenspielen # MySQLデータベース名設定
+    ports:
+      - "3307:3306"
+    volumes:
+      # - ./db:/docker-entrypoint-initdb.d # コンテナ作成時に走るシェルスクリプト指定
+      - ./mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+    networks:
+      - game
+
+networks:
+  game:
+    external: true
