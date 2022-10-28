@@ -1,17 +1,3 @@
-# FROM node:16-alpine AS deps
-
-# RUN apk add --no-cache libc6-compat
-
-# WORKDIR /app
-# COPY . .
-# RUN yarn install --frozen-lockfile
-# RUN yarn global add esbuild
-
-# EXPOSE 5173
-# ENV PORT 5173
-# CMD ["yarn", "dev"]
-
-# ビルド用
 FROM node:16.15.1-alpine as builder
 
 WORKDIR /app

@@ -46,3 +46,11 @@ npx prisma db push
 ```bash
 npx prisma studio
 ```
+
+## Docker
+```
+$ docker build -t sveltekit .
+```
+```
+$ docker run --rm -p 3000:3000 -it sveltekit
+```
