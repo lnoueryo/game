@@ -87,9 +87,9 @@ func CreateTable(in *pb.TableCreateRequest) (*pb.GameReply, error) {
 		}
 		err = status.Error(codes.Unknown, message)
 		return gameReply, err
-	} else {
-		tx.Commit()
 	}
+
+	tx.Commit()
 
 	gameReply, err = GetGameByID(int(tb.GameId));if err != nil {
 		cf.Errorlog.Println(err)
