@@ -24,13 +24,36 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: password # MySQLパスワード設定
       MYSQL_DATABASE: kartenspielen # MySQLデータベース名設定
+    healthcheck:
+        test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+        timeout: 20s
+        retries: 5
     ports:
       - "3307:3306"
     volumes:
       # - ./db:/docker-entrypoint-initdb.d # コンテナ作成時に走るシェルスクリプト指定
-      - ./mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./db/my.cnf:/etc/mysql/conf.d/my.cnf
     networks:
       - game
+
+  migrate:
+    build:
+      context: "."
+      dockerfile: "docker/migrations/Dockerfile"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      - ./docker/migrations/Dockerfile:/app
+    networks:
+      - game
+    environment:
+      WAIT_HOSTS: mysql:3306
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: kartenspielen
+      MYSQL_USER: root
+      MYSQL_PASSWORD: password
 
 networks:
   game:
