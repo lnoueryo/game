@@ -1,10 +1,10 @@
-# nursebe
+# Kartenspielen
 
 ## バックエンド
 [ Apiサーバー ](./server)
 
 ## フロントエンド
-[ sveltekitのフロントエンド ](./client)
+[ sveltekit ](./client)
 
 ## インフラ
 [ GCP (terraform) ](./terraform)
