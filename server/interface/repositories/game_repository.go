@@ -120,7 +120,7 @@ func GetGameByID(id int) (*pb.GameReply, error) {
 		err = status.Error(codes.Unknown, "not found")
 		cf.Errorlog.Println(err)
 	}
-	cf.Infolog.Println(gameReply)
+
 	return &gameReply, err
 	// rows, err := DB.Query("SELECT g.id, g.name, g.orignal_extra_fields, CASE WHEN g.key is NULL THEN JSON_ARRAY() ELSE JSON_ARRAYAGG((JSON_OBJECT('key', g.key, 'title', g.title, 'gameId', g.gameId, 'adminId', g.adminId, 'limit', g.limit, 'start', g.start, 'extraFields', g.`extraFields`, 'players', g.players))) END as tables FROM (SELECT g.id, g.name, g.extraFields AS orignal_extra_fields, t.key, t.title, t.gameId, t.adminId, t.limit, t.start, t.`extraFields`, JSON_ARRAYAGG(JSON_OBJECT('id', p.id, 'username', p.username)) as players FROM game g LEFT JOIN `table` AS t ON t.gameId = g.id LEFT JOIN player AS p ON p.tableId = t.`key` WHERE g.id = ? GROUP BY p.tableId) AS g", id);if err != nil {
 	// 	cf.Errorlog.Println(err)

@@ -2,10 +2,8 @@ package controllers
 
 import (
 	"context"
-	"database/sql"
 
 	pb "game/infrastructure/grpc/proto"
-	db "game/infrastructure/database"
 	repo "game/interface/repositories"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -16,8 +14,6 @@ import (
 type Server struct {
 	pb.UnimplementedGameServer
 }
-
-var DB *sql.DB = db.DB
 
 func (s *Server) GetGame(ctx context.Context, in *pb.GameRequest) (*pb.GameReply, error) {
 

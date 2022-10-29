@@ -9,26 +9,33 @@ import (
 	"testing"
 
 	pb "game/infrastructure/grpc/proto"
-
+	db "game/infrastructure/database"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-const (
-	DATABASE_URL = "root:password@tcp(127.0.0.1:3307)/kartenspielen"
-)
+var DB *sql.DB
+
+func init() {
+	DB = db.DB
+}
+
 
 func setup(t *testing.T) {
-	db, err := sql.Open("mysql", "root:password@tcp(127.0.0.1:3307)/kartenspielen")
-	if err != nil {
-		t.Fatal(err)
-	}
-	DB = db
 	// クリーンアップ
 	if _, err := DB.Exec("DELETE FROM `table`"); err != nil {
 		t.Fatal(err)
+	}
+	// 空であることを確認
+	var first int
+	if err := DB.QueryRow("SELECT COUNT( * ) FROM `table`").Scan(&first); err != nil {
+		t.Fatal(err)
+	}
+	if first != 0 {
+		t.Errorf("count( * ) of table must be 0")
+		return
 	}
 }
 
@@ -81,7 +88,7 @@ func createTable(req *pb.TableCreateRequest) *pb.GameReply {
 	return res
 }
 
-func createRequest(adminId int32) *pb.TableCreateRequest {
+func createRequest(adminId int32, GameId int32) *pb.TableCreateRequest {
 	u, err := uuid.NewRandom()
 	if err != nil {
 		fmt.Println(err)
@@ -90,10 +97,9 @@ func createRequest(adminId int32) *pb.TableCreateRequest {
 	table := pb.Table{
 		Key:         uu,
 		Title:       "Hello",
-		GameId:      1,
+		GameId:      GameId,
 		AdminId:     adminId,
 		Limit:       3,
-		Start:       0,
 		ExtraFields: map[string]string{"turn": ""},
 	}
 	return &pb.TableCreateRequest{
