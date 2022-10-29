@@ -19,7 +19,11 @@ seed:
 	docker-compose up -d migrate
 
 test:
-	go test -v ./interface/repositories/tests/... -count 30
+	docker exec -it  kartenspielen-table go test ./interface/repositories/tests/... ./interface/controllers/tests/...
+
+tests:
+	docker exec -it  kartenspielen-table go test ./interface/controllers/tests/... -count 50
+	docker exec -it  kartenspielen-table go test ./interface/repositories/tests/... -count 50
 
 delete:
 	docker-compose down --rmi all --volumes --remove-orphans

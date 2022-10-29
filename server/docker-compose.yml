@@ -56,13 +56,20 @@ services:
     image: kartenspielen-migrate
     container_name: kartenspielen-migrate
     build:
-      context: "."
+      context: "./server"
       dockerfile: "docker/migrations/Dockerfile"
     depends_on:
       db:
         condition: service_healthy
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      SERVER_PORT: ${TABLE_SERVER_PORT}
     volumes:
-      - ./docker/migrations/Dockerfile:/app
+      - ./docker/migrations:/app
     networks:
       game:
         ipv4_address: 192.168.0.4

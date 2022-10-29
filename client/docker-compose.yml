@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+
+  sveltekit:
+    image: kartenspielen-sveltekit
+    container_name: kartenspielen-sveltekit
+    build:
+      context: "."
+      dockerfile: "docker/dev/Dockerfile"
+    ports:
+      - 3000:${SERVER_PORT}
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      SERVER_PORT: ${SERVER_PORT}
+      NODE_OPTIONS: --max_old_space_size=8192
+    volumes:
+      - "./src:/app/src"
+      - "./static:/app/static"
+      - "./tests:/app/tests"
+      - "./prisma:/app/prisma"
+    networks:
+      game:
+        ipv4_address: 192.168.0.5
+    hostname: sveltekit
+    extra_hosts:
+      - db:192.168.0.3
+
+
+networks:
+  game:
+    name: game
+    # external: true
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.0.1/24
