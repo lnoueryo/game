@@ -10,7 +10,7 @@ const pd = protoLoader.loadSync(protoFile, options)
 // gPRC 用の動的な型定義生成
 const gameProto = grpc.loadPackageDefinition(pd).proto
 
-const target = 'localhost:50051'
+const target = process.env.TABLE_HOST + ':' + process.env.TABLE_PORT
 
 export const gameClient = new gameProto.Game(target, grpc.credentials.createInsecure());
 

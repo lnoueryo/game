@@ -18,7 +18,10 @@ const websocket = {
 }
 
 const config: UserConfig = {
-	plugins: [sveltekit(), websocket]
+	plugins: [sveltekit(), websocket],
+  server: {
+    host: true
+  }
 };
 
 export default config;

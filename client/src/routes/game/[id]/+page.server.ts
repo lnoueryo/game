@@ -61,7 +61,6 @@ const createTable: Action = async ({ cookies, request, params, locals }) => {
     gameId: gameId,
     adminId: user.id,
     limit: limit,
-    start: false,
     extraFields: locals.game.extraFields
   }
 
