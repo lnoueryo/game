@@ -194,7 +194,7 @@ CREATE TABLE `table` (
   `limit` int NOT NULL,
   `createdAt` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `updatedAt` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `start` tinyint(1) NOT NULL,
+  `start` tinyint(1) NOT NULL DEFAULT 0,
   `extraFields` json NOT NULL,
   PRIMARY KEY (`key`),
   KEY `Tables_gameId_fkey` (`gameId`),

@@ -3,58 +3,77 @@ version: '3.8'
 services:
 
   api:
-    container_name: table-api
+    image: kartenspielen-table
+    container_name: kartenspielen-table
     build:
       context: "."
-      dockerfile: "docker/prod/Dockerfile"
+      dockerfile: "docker/api/Dockerfile"
     ports:
-      - "50051:50051"
+      - 50051:${TABLE_SERVER_PORT}
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      SERVER_PORT: ${TABLE_SERVER_PORT}
     depends_on:
-      - mysql
+      - db
     volumes:
-      - ".:/app"
+      - "./config:/app/config"
+      - "./infrastructure:/app/infrastructure"
+      - "./interface:/app/interface"
     networks:
-      - game
-    command: go run main.go -port 50051
+      game:
+        ipv4_address: 192.168.0.2
+    hostname: table
+    extra_hosts:
+      - db:192.168.0.3
+    command: go run main.go
 
-  mysql:
+  db:
     image: mysql:8.0 # プロダクトで使うならバージョンはlatestじゃないほうが良いです
-    container_name: kartenspielen_mysql
+    container_name: kartenspielen-mysql
     platform: linux/x86_64
     environment:
-      MYSQL_ROOT_PASSWORD: password # MySQLパスワード設定
-      MYSQL_DATABASE: kartenspielen # MySQLデータベース名設定
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE:  ${DB_NAME}
     healthcheck:
         test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
         timeout: 20s
         retries: 5
     ports:
-      - "3307:3306"
+      - 3307:${DB_PORT}
     volumes:
       # - ./db:/docker-entrypoint-initdb.d # コンテナ作成時に走るシェルスクリプト指定
       - ./db/my.cnf:/etc/mysql/conf.d/my.cnf
     networks:
-      - game
+      game:
+        ipv4_address: 192.168.0.3
+    hostname: mysql
 
   migrate:
+    image: kartenspielen-migrate
+    container_name: kartenspielen-migrate
     build:
       context: "."
       dockerfile: "docker/migrations/Dockerfile"
     depends_on:
-      mysql:
+      db:
         condition: service_healthy
     volumes:
       - ./docker/migrations/Dockerfile:/app
     networks:
-      - game
-    environment:
-      WAIT_HOSTS: mysql:3306
-      MYSQL_HOST: mysql
-      MYSQL_PORT: 3306
-      MYSQL_DATABASE: kartenspielen
-      MYSQL_USER: root
-      MYSQL_PASSWORD: password
+      game:
+        ipv4_address: 192.168.0.4
+    hostname: migrate
 
 networks:
   game:
-    external: true
+    name: game
+    # external: true
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.0.1/24
