@@ -52,6 +52,21 @@ services:
         ipv4_address: 192.168.0.3
     hostname: mysql
 
+  db-test:
+    image: mysql:8.0 # プロダクトで使うならバージョンはlatestじゃないほうが良いです
+    container_name: kartenspielen-mysql-test
+    platform: linux/x86_64
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD_TEST}
+    ports:
+      - 3308:${DB_PORT_TEST}
+    volumes:
+      - ./server/docker/migrations:/docker-entrypoint-initdb.d # コンテナ作成時に走るシェルスクリプト指定
+    networks:
+      kartenspielen:
+        ipv4_address: 192.168.0.6
+    hostname: mysql-test
+
   migrate:
     image: kartenspielen-migrate
     container_name: kartenspielen-migrate

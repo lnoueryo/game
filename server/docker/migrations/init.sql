@@ -18,6 +18,22 @@
 --
 -- Table structure for table `_prisma_migrations`
 --
+SET GLOBAL general_log = 1;
+SET GLOBAL slow_query_log = 1;
+SET GLOBAL long_query_time = 0.5;
+/* 一般クエリログ */
+SET GLOBAL log_output = FILE;
+SET GLOBAL general_log = 1;
+
+/* スロークエリログ */
+SET GLOBAL slow_query_log = 1;
+SET GLOBAL long_query_time = 0.5;
+
+SET GLOBAL sql_mode = 'NO_ENGINE_SUBSTITUTION';
+
+CREATE DATABASE IF NOT EXISTS kartenspielen;
+
+USE kartenspielen;
 
 DROP TABLE IF EXISTS `_prisma_migrations`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
