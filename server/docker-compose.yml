@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
 
-  api:
+  table-api:
     image: kartenspielen-table
     container_name: kartenspielen-table
     build:
@@ -24,11 +24,11 @@ services:
       - "./infrastructure:/app/infrastructure"
       - "./interface:/app/interface"
     networks:
-      game:
+      kartenspielen:
         ipv4_address: 192.168.0.2
     hostname: table
     extra_hosts:
-      - db:192.168.0.3
+      - mysql:192.168.0.3
     command: go run main.go
 
   db:
@@ -48,7 +48,7 @@ services:
       # - ./db:/docker-entrypoint-initdb.d # コンテナ作成時に走るシェルスクリプト指定
       - ./db/my.cnf:/etc/mysql/conf.d/my.cnf
     networks:
-      game:
+      kartenspielen:
         ipv4_address: 192.168.0.3
     hostname: mysql
 
@@ -71,14 +71,13 @@ services:
     volumes:
       - ./docker/migrations:/app
     networks:
-      game:
+      kartenspielen:
         ipv4_address: 192.168.0.4
     hostname: migrate
 
 networks:
-  game:
-    name: game
-    # external: true
+  kartenspielen:
+    name: kartenspielen
     driver: bridge
     ipam:
       driver: default
