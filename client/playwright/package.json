@@ -1,0 +1,20 @@
+{
+  "name": "playwright",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "playwright test",
+    "test:watch": "chokidar \"tests/**/*\" -c \"echo Modified Test... && npm run test\"",
+    "test:watch:docker": "SHELL=/bin/bash chokidar \"tests/**/*\" -c \"echo Modified Test... && npm run test\""
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chokidar-cli": "^3.0.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.27.1",
+    "@types/node": "^18.11.8"
+  }
+}
