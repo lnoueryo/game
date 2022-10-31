@@ -7,7 +7,7 @@ import (
 
 	pb "game/infrastructure/grpc/proto"
 	cr "game/interface/controllers"
-
+	"game/config"
 	_ "github.com/go-sql-driver/mysql"
 	"google.golang.org/grpc"
 )
@@ -23,7 +23,11 @@ func CreateServer() error {
 		return err
 	}
 
-	s := grpc.NewServer()
+	middleware := config.CreateAccesslog()
+
+	s := grpc.NewServer(
+		middleware,
+	)
 
 	pb.RegisterGameServer(s, &cr.Server{})
 	log.Printf("server listening at %v", lis.Addr())
