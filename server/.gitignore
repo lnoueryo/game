@@ -1,2 +1,4 @@
 infrastructure/grpc/proto
 .env
+db/mysql
+db/logs
